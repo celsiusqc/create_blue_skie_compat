@@ -75,23 +75,7 @@
 	crushingDamage = 4
 	#.
 	#[in Revolutions per Minute]
-	#Maximum allowed speed of a configurable motor.
-	#[@cui:RequiresReload:both]
-	#Range: > 64
-	maxMotorSpeed = 256
-	#.
-	#[in Revolutions per Minute]
-	#Added rotation speed by a water wheel when at least one flow is present.
-	#Range: > 1
-	waterWheelBaseSpeed = 4
-	#.
-	#[in Revolutions per Minute]
-	#Rotation speed gained by a water wheel for each side with running fluids. (halved if not against blades)
-	#Range: > 1
-	waterWheelFlowSpeed = 4
-	#.
-	#[in Revolutions per Minute]
-	#Maximum allowed rotation speed for any Kinetic Tile.
+	#Maximum allowed rotation speed for any Kinetic Block.
 	#Range: > 64
 	maxRotationSpeed = 256
 	#.
@@ -146,7 +130,7 @@
 		#.
 		#Game ticks required for a Fan-based processing recipe to take effect.
 		#Range: > 0
-		inWorldProcessingTime = 150
+		fanProcessingTime = 150
 
 	#.
 	#Moving Contraptions
@@ -179,6 +163,10 @@
 		#Range: > 1
 		maxCartCouplingLength = 32
 		#.
+		#Maximum depth of blocks filled in using a Mechanical Roller.
+		#Range: > 1
+		rollerFillDepth = 12
+		#.
 		#Whether minecart contraptions can be picked up in survival mode.
 		survivalContraptionPickup = true
 		#.
@@ -206,6 +194,43 @@
 		#.
 		#Whether harvesters should replant crops after harvesting.
 		harvesterReplants = true
+		#.
+		#Whether minecart contraptions can be placed into container items.
+		minecartContraptionInContainers = false
+
+	#.
+	#Configure speed/capacity levels for requirements and indicators.
+	[kinetics.stats]
+		#.
+		#[in Revolutions per Minute]
+		#Minimum speed of rotation to be considered 'medium'
+		#Range: 0.0 ~ 4096.0
+		mediumSpeed = 30.0
+		#.
+		#[in Revolutions per Minute]
+		#Minimum speed of rotation to be considered 'fast'
+		#Range: 0.0 ~ 65535.0
+		fastSpeed = 100.0
+		#.
+		#[in Stress Units]
+		#Minimum stress impact to be considered 'medium'
+		#Range: 0.0 ~ 4096.0
+		mediumStressImpact = 4.0
+		#.
+		#[in Stress Units]
+		#Minimum stress impact to be considered 'high'
+		#Range: 0.0 ~ 65535.0
+		highStressImpact = 8.0
+		#.
+		#[in Stress Units]
+		#Minimum added Capacity by sources to be considered 'medium'
+		#Range: 0.0 ~ 4096.0
+		mediumCapacity = 256.0
+		#.
+		#[in Stress Units]
+		#Minimum added Capacity by sources to be considered 'high'
+		#Range: 0.0 ~ 65535.0
+		highCapacity = 1024.0
 
 	[kinetics.stressValues]
 
@@ -240,6 +265,7 @@
 				rope_pulley = 4.0
 				rotation_speed_controller = 0.0
 				mechanical_arm = 2.0
+				netherite_backtank = 4.0
 				andesite_encased_shaft = 0.0
 				mechanical_press = 8.0
 				large_cogwheel = 0.0
@@ -261,68 +287,20 @@
 				brass_encased_cogwheel = 0.0
 				gearbox = 0.0
 				hose_pulley = 4.0
+				elevator_pulley = 4.0
 				mechanical_crafter = 2.0
 
 			#.
 			#[in Stress Units]
 			#Configure how much stress a source can accommodate for.
 			[kinetics.stressValues.v2.capacity]
-				blue_valve_handle = 8.0
 				copper_valve_handle = 8.0
-				pink_valve_handle = 8.0
 				hand_crank = 8.0
-				black_valve_handle = 8.0
-				magenta_valve_handle = 8.0
-				white_valve_handle = 8.0
-				yellow_valve_handle = 8.0
-				brown_valve_handle = 8.0
-				cyan_valve_handle = 8.0
-				windmill_bearing = 512.0
-				light_blue_valve_handle = 8.0
-				lime_valve_handle = 8.0
-				purple_valve_handle = 8.0
-				red_valve_handle = 8.0
 				steam_engine = 1024.0
 				creative_motor = 16384.0
-				gray_valve_handle = 8.0
-				water_wheel = 16.0
-				orange_valve_handle = 8.0
-				light_gray_valve_handle = 8.0
-				green_valve_handle = 8.0
-
-		#.
-		#Configure speed/capacity levels for requirements and indicators.
-		[kinetics.stressValues.stats]
-			#.
-			#[in Revolutions per Minute]
-			#Minimum speed of rotation to be considered 'medium'
-			#Range: 0.0 ~ 4096.0
-			mediumSpeed = 30.0
-			#.
-			#[in Revolutions per Minute]
-			#Minimum speed of rotation to be considered 'fast'
-			#Range: 0.0 ~ 65535.0
-			fastSpeed = 100.0
-			#.
-			#[in Stress Units]
-			#Minimum stress impact to be considered 'medium'
-			#Range: 0.0 ~ 4096.0
-			mediumStressImpact = 4.0
-			#.
-			#[in Stress Units]
-			#Minimum stress impact to be considered 'high'
-			#Range: 0.0 ~ 65535.0
-			highStressImpact = 8.0
-			#.
-			#[in Stress Units]
-			#Minimum added Capacity by sources to be considered 'medium'
-			#Range: 0.0 ~ 4096.0
-			mediumCapacity = 128.0
-			#.
-			#[in Stress Units]
-			#Minimum added Capacity by sources to be considered 'high'
-			#Range: 0.0 ~ 65535.0
-			highCapacity = 1024.0
+				large_water_wheel = 128.0
+				water_wheel = 32.0
+				windmill_bearing = 512.0
 
 #.
 #Create's liquid manipulation tools
@@ -362,17 +340,16 @@
 	#Allowed Values: ALLOW_ALL, DENY_ALL, ALLOW_BY_TAG, DENY_BY_TAG
 	bottomlessFluidMode = "ALLOW_BY_TAG"
 	#.
-	#Whether open-ended pipes and hose pulleys should be allowed to place fluid sources.
-	placeFluidSourceBlocks = true
+	#Whether hose pulleys should be allowed to place fluid sources.
+	fluidFillPlaceFluidSourceBlocks = true
+	#.
+	#Whether open-ended pipes should be allowed to place fluid sources.
+	pipesPlaceFluidSourceBlocks = true
 
 #.
 #Tweaks for logistical components
 [logistics]
 	#.
-	#.
-	#The maximum amount of items a funnel pulls at a time without an applied filter.
-	#Range: 1 ~ 64
-	defaultExtractionLimit = 64
 	#.
 	#The amount of ticks a funnel waits between item transferrals, when it is not re-activated by redstone.
 	#Range: > 1
@@ -380,7 +357,7 @@
 	#.
 	#The amount of ticks a portable storage interface waits for transfers until letting contraptions move along.
 	#Range: > 1
-	psiTimeout = 20
+	psiTimeout = 60
 	#.
 	#Maximum distance in blocks a Mechanical Arm can reach across.
 	#Range: > 1
@@ -397,6 +374,13 @@
 	#The total amount of stacks a vault can hold per block in size.
 	#Range: > 1
 	vaultCapacity = 20
+	#.
+	#The amount of ticks a brass tunnel waits between distributions.
+	#Range: 1 ~ 10
+	brassTunnelTimer = 10
+	#.
+	#Whether hostile mobs walking near a seat will start riding it.
+	seatHostileMobs = true
 
 #.
 #Everything related to Schematic tools
@@ -437,8 +421,8 @@
 		schematicannonFuelUsage = 0.05000000074505806
 
 #.
-#Gadgets and other Shenanigans added by Create
-[curiosities]
+#Equipment and gadgets added by Create
+[equipment]
 	#.
 	#.
 	#The Maximum Distance to an active mirror for the symmetry wand to trigger.
